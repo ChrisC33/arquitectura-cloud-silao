@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arquitectura Cloud - Planta Nestlé Purina Silao</title>
+    <title>Arquitectura Cloud · Planta Nestlé Purina Silao</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,35 +13,75 @@
             padding: 20px;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: #fff;
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
         h1 {
             color: #004080;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            font-size: 1.6em;
         }
         .subtitle {
             text-align: center;
             color: #666;
-            font-size: 1.1em;
-            margin-bottom: 30px;
+            font-size: 1em;
+            margin-bottom: 25px;
         }
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            margin-bottom: 35px;
+        /* Sistema de pestañas */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: #eef4f8;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #004080;
+        }
+        .tab-btn {
+            background: #ffffff;
+            border: 1px solid #d1d9e0;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+            min-width: 160px;
+        }
+        .tab-btn:hover {
+            background: #e2e8f0;
+        }
+        .tab-btn.active {
+            background: #004080;
+            color: white;
+            border-color: #004080;
+        }
+        /* Contenido de las pestañas */
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+        }
+        .tab-content.active {
+            display: block;
         }
         .module-card {
             background: #f9fbfb;
             border-left: 4px solid #004080;
             padding: 20px;
             border-radius: 6px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
         }
         .module-card h3 {
@@ -49,46 +89,46 @@
             color: #004080;
             font-size: 1.1em;
         }
-        .module-card p {
-            font-size: 0.95em;
-            color: #555;
-            margin-bottom: 0;
-        }
-        .action-section {
-            text-align: center;
-            background: #eef4f8;
-            padding: 30px;
+        /* Estilos del Cuestionario embebido */
+        .questionnaire-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 25px;
             border-radius: 8px;
-            margin-top: 20px;
         }
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        .questionnaire-box h3 {
+            color: #004080;
+            margin-top: 0;
         }
-        .btn {
-            display: inline-block;
-            background-color: #0066cc;
-            color: white;
-            padding: 12px 25px;
-            font-size: 1.05em;
-            text-decoration: none;
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+        .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
+            font-family: inherit;
+        }
+        .submit-btn {
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
             font-weight: bold;
-            box-shadow: 0 3px 6px rgba(0,102,204,0.3);
+            border-radius: 6px;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        .btn:hover {
-            background-color: #004d99;
-        }
-        .btn-secondary {
-            background-color: #28a745;
-            box-shadow: 0 3px 6px rgba(40,167,69,0.3);
-        }
-        .btn-secondary:hover {
-            background-color: #218838;
+        .submit-btn:hover {
+            background-color: #15803d;
         }
         .footer {
             text-align: center;
@@ -97,41 +137,111 @@
             color: #888;
         }
     </style>
+    <script>
+        function openTab(evt, tabId) {
+            let contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+            let buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function submitEvaluation(event) {
+            event.preventDefault();
+            alert("¡Muchas gracias! Tus respuestas de evaluación han sido registradas exitosamente en el sistema del proyecto.");
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>Arquitectura Cloud · Planta Nestlé Purina Silao</h1>
-        <div class="subtitle">Estrategia integral de infraestructura, control operativo y trazabilidad en la nube</div>
+        <h1>CONSTRUCTORA & MANTENIMIENTO CLOUD · CONTROL EN TIEMPO REAL</h1>
+        <div class="subtitle">Planta Nestlé Purina Silao · Estrategia de Infraestructura y Trazabilidad</div>
         
-        <div class="modules-grid">
+        <!-- PESTAÑAS DE NAVEGACIÓN -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'tab1')">1. Respaldo Inmutable</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab2')">2. App Móvil Campo</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab3')">3. Control Financiero</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab4')">4. Tablero Ejecutivo</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab5')" style="background-color: #003366; color: white;">📋 5. Cuestionario Daniel</button>
+        </div>
+
+        <!-- CONTENIDO PESTAÑA 1 -->
+        <div id="tab1" class="tab-content active">
             <div class="module-card">
-                <h3>1. Cerebro Documental y Seguridad RBAC</h3>
-                <p>Almacenamiento estructurado con control de accesos por roles y protección de carpetas confidenciales.</p>
-            </div>
-            <div class="module-card">
-                <h3>2. Operaciones de Campo (App Móvil)</h3>
-                <p>Check-in por GPS, registros móviles en tiempo real, órdenes firmadas y bitácoras vivas.</p>
-            </div>
-            <div class="module-card">
-                <h3>3. Control Financiero e Inventarios</h3>
-                <p>Monitoreo centralizado de insumos, costos operativos, Opus/Neodata y trazabilidad de materiales.</p>
-            </div>
-            <div class="module-card">
-                <h3>4. Bóveda Inmutable y Tablero Ejecutivo</h3>
-                <p>Auditoría estricta 3-2-1, respaldos automáticos y visualización de KPIs gerenciales en tiempo real.</p>
+                <h3>Módulo 1: Cerebro Documental y Seguridad por Rol (RBAC)</h3>
+                <p>Almacenamiento estructurado con políticas de retención estrictas y control de accesos automatizado para proteger carpetas confidenciales, actas constitutivas y fianzas según el usuario que inicie sesión.</p>
             </div>
         </div>
 
-        <div class="action-section">
-            <h3>Evaluación y Prototipo Funcional</h3>
-            <p>Explora el sistema en vivo simulando los diferentes roles y completa el cuestionario de validación del proyecto.</p>
-            
-            <div class="btn-group">
-                <!-- ENLACE AL PROTOTIPO EN VIVO -->
-                <a href="https://share.gemini.google/5d1kvFVfzKNT" class="btn btn-secondary" target="_blank">💻 Ver Prototipo Funcional en Vivo</a>
+        <!-- CONTENIDO PESTAÑA 2 -->
+        <div id="tab2" class="tab-content">
+            <div class="module-card">
+                <h3>Módulo 2: Operaciones de Campo (App Móvil Residente / Técnico)</h3>
+                <p>Check-in validado por GPS, registros móviles de avances en tiempo real, validación de planos y generación de órdenes de trabajo firmadas digitalmente en sitio.</p>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PESTAÑA 3 -->
+        <div id="tab3" class="tab-content">
+            <div class="module-card">
+                <h3>Módulo 3: Control Financiero e Inventarios</h3>
+                <p>Monitoreo centralizado de insumos, costos operativos, integración con Opus/Neodata y trazabilidad completa de materiales de construcción y mantenimiento.</p>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PESTAÑA 4 -->
+        <div id="tab4" class="tab-content">
+            <div class="module-card">
+                <h3>Módulo 4: Tablero de Mando Ejecutivo y Bóveda Inmutable (3-2-1)</h3>
+                <p>Auditoría estricta de respaldos, seguridad inmutable contra modificaciones no autorizadas y visualización de KPIs de desempeño gerencial en tiempo real.</p>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PESTAÑA 5: CUESTIONARIO INTEGRADO -->
+        <div id="tab5" class="tab-content">
+            <div class="questionnaire-box">
+                <h3>Cuestionario de Evaluación y Validación del Prototipo</h3>
+                <p>Estimado Daniel, por favor completa este breve cuestionario para registrar tus observaciones y validar la propuesta técnica de la plataforma.</p>
                 
-                <!-- ENLACE AL CUESTIONARIO: Reemplaza las comillas por el link real de tu cuestionario -->
-                <a href="AQUÍ_PEGAS_EL_LINK_DE_TU_CUESTIONARIO" class="btn" target="_blank">📋 Responder Cuestionario</a>
+                <form onsubmit="submitEvaluation(event)">
+                    <div class="form-group">
+                        <label for="evaluador">Nombre del Evaluador:</label>
+                        <input type="text" id="evaluador" value="Daniel" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p1">1. ¿Qué tan adecuada consideras la estructura de carpetas y permisos RBAC por roles?</label>
+                        <select id="p1" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="excelente">Excelente y muy clara</option>
+                            <option value="adecuada">Adecuada, cumple con lo necesario</option>
+                            <option value="requiere_cambios">Requiere ajustes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p2">2. ¿Validas positivamente la integración de la App de Campo con el Tablero Gerencial?</label>
+                        <select id="p2" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="si">Sí, apruebo el flujo operativo</option>
+                            <option value="observaciones">Sí, con observaciones menores</option>
+                            <option value="no">No, se sugiere replantear</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comentarios">Comentarios generales o ajustes solicitados:</label>
+                        <textarea id="comentarios" rows="4" placeholder="Escribe aquí tus observaciones o notas sobre el prototipo..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Enviar Evaluación del Prototipo</button>
+                </form>
             </div>
         </div>
 

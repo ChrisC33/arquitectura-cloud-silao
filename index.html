@@ -1,253 +1,671 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arquitectura Cloud · Planta Nestlé Purina Silao</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            margin: 0;
-            padding: 20px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arquitectura Cloud 360° · Caso Planta Nestlé Purina Silao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-        h1 {
-            color: #004080;
-            text-align: center;
-            margin-bottom: 5px;
-            font-size: 1.6em;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 1em;
-            margin-bottom: 25px;
-        }
-        /* Sistema de pestañas */
-        .tabs-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            background: #eef4f8;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #004080;
-        }
-        .tab-btn {
-            background: #ffffff;
-            border: 1px solid #d1d9e0;
-            padding: 10px 15px;
-            font-size: 0.9em;
-            font-weight: 600;
-            color: #333;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-            text-align: center;
-            min-width: 160px;
-        }
-        .tab-btn:hover {
-            background: #e2e8f0;
-        }
-        .tab-btn.active {
-            background: #004080;
-            color: white;
-            border-color: #004080;
-        }
-        /* Contenido de las pestañas */
-        .tab-content {
-            display: none;
-            padding: 15px;
-            background: #fdfdfd;
-            border: 1px solid #eaeaea;
-            border-radius: 8px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .module-card {
-            background: #f9fbfb;
-            border-left: 4px solid #004080;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-        }
-        .module-card h3 {
-            margin-top: 0;
-            color: #004080;
-            font-size: 1.1em;
-        }
-        /* Estilos del Cuestionario embebido */
-        .questionnaire-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            padding: 25px;
-            border-radius: 8px;
-        }
-        .questionnaire-box h3 {
-            color: #004080;
-            margin-top: 0;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #1e293b;
-        }
-        .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-family: inherit;
-        }
-        .submit-btn {
-            background-color: #16a34a;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1em;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .submit-btn:hover {
-            background-color: #15803d;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.85em;
-            color: #888;
-        }
-    </style>
-    <script>
-        function openTab(evt, tabId) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) {
-                contents[i].classList.remove("active");
-            }
-            let buttons = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].classList.remove("active");
-            }
-            document.getElementById(tabId).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        function submitEvaluation(event) {
-            event.preventDefault();
-            alert("¡Muchas gracias! Tus respuestas de evaluación han sido registradas exitosamente en el sistema del proyecto.");
-        }
-    </script>
+      }
+    }
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { background-color: #F8FAFC; color: #0F172A; font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { height: 6px; width: 6px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <h1>CONSTRUCTORA & MANTENIMIENTO CLOUD · CONTROL EN TIEMPO REAL</h1>
-        <div class="subtitle">Planta Nestlé Purina Silao · Estrategia de Infraestructura y Trazabilidad</div>
-        
-        <!-- PESTAÑAS DE NAVEGACIÓN -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="openTab(event, 'tab1')">1. Respaldo Inmutable</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab2')">2. App Móvil Campo</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab3')">3. Control Financiero</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab4')">4. Tablero Ejecutivo</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab5')" style="background-color: #003366; color: white;">📋 5. Cuestionario Daniel</button>
-        </div>
+<body class="min-h-screen flex flex-col">
+  <div id="root"></div>
 
-        <!-- CONTENIDO PESTAÑA 1 -->
-        <div id="tab1" class="tab-content active">
-            <div class="module-card">
-                <h3>Módulo 1: Cerebro Documental y Seguridad por Rol (RBAC)</h3>
-                <p>Almacenamiento estructurado con políticas de retención estrictas y control de accesos automatizado para proteger carpetas confidenciales, actas constitutivas y fianzas según el usuario que inicie sesión.</p>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [mainTab, setMainTab] = useState("dual");
+      const [mobileTab, setMobileTab] = useState("ticket");
+      const [offlineMode, setOfflineMode] = useState(false);
+      const [offlineQueue, setOfflineQueue] = useState([]);
+      const [vaultFlash, setVaultFlash] = useState(false);
+      const [showVaultModal, setShowVaultModal] = useState(false);
+
+      const [silaoAdvance, setSilaoAdvance] = useState(18);
+      const [silaoSpentPct, setSilaoSpentPct] = useState(16.5);
+      const [closedTickets, setClosedTickets] = useState(14);
+      const [openReqs, setOpenReqs] = useState([
+        { id: "REQ-904", obra: "Planta Nestlé Purina Silao · Nave Proceso", item: "Acero Estructural A-36 (18 Ton)", monto: 468000, solicitante: "Ing. Residente Silao", status: "Pendiente" },
+        { id: "REQ-905", obra: "Planta Nestlé Purina Silao · Subestación", item: "Charola Portacable Aluminio 24\"", monto: 84500, solicitante: "Sup. Electromecánico", status: "Pendiente" }
+      ]);
+      const [feedLogs, setFeedLogs] = useState([
+        { time: "Hace 8 min", type: "GPS", text: "Check-in Asistencia (24 técnicos IMSS/DC-3 OK) — Caseta Norte Nestlé Purina Silao (20.9961° N, 101.4862° W)" },
+        { time: "Hace 22 min", type: "CAD", text: "Plano Estructural E-104 Rev.3 sincronizado en modo Solo Lectura para tabletas en Silao" },
+        { time: "Hace 45 min", type: "BACKUP", text: "Respaldo Inmutable 3-2-1 completado: 1.42 TB encriptados (Estaciones AutoCAD + Servidor Opus)" }
+      ]);
+
+      const [selectedSite, setSelectedSite] = useState("Planta Nestlé Purina Silao · Cimentación Nave Principal");
+      const [signedBy, setSignedBy] = useState("Ing. Supervisor EHS / Control de Calidad Silao");
+      const [signatureDone, setSignatureDone] = useState(true);
+      const [reqMaterial, setReqMaterial] = useState("Concreto Premezclado f'c=350 kg/cm² (42 m³)");
+      const [reqCost, setReqCost] = useState("136500");
+      const [qrTool, setQrTool] = useState("Estación Total Leica TS07 #QR-019");
+      const [workerCheck, setWorkerCheck] = useState("Cuadrilla Montaje Estructural (12 personas · SUA/DC-3 Vigente)");
+
+      const [roleView, setRoleView] = useState("Director");
+
+      const [empresaNombre, setEmpresaNombre] = useState("");
+      const [contactoNombre, setContactoNombre] = useState("");
+      const [empOficina, setEmpOficina] = useState(8);
+      const [empResidentes, setEmpResidentes] = useState(6);
+      const [empCampo, setEmpCampo] = useState(35);
+      const [pcOficina, setPcOficina] = useState(6);
+      const [pcCad, setPcCad] = useState(4);
+      const [pcPortatiles, setPcPortatiles] = useState(5);
+      const [accionComputo, setAccionComputo] = useState(["Actualizar equipos lentos (SSD/RAM)", "Adquirir equipos nuevos para proyecto Silao"]);
+      const [licenciasReq, setLicenciasReq] = useState(["Windows Pro", "Microsoft 365 / Google Workspace", "AutoCAD / BIM", "Opus / CONTPAQi en Nube", "Antivirus Empresarial"]);
+      const [respaldosLocales, setRespaldosLocales] = useState(["Carpetas Mis Documentos / Escritorio de cada PC", "Correos históricos (.PST Outlook)", "Bases de datos Opus / Neodata / Contabilidad", "Respaldo diario automático sin intervención"]);
+      const [checadorActual, setChecadorActual] = useState(["Listas en papel / Excel por residente", "Mensajes por grupos de WhatsApp"]);
+      const [doloresCompras, setDoloresCompras] = useState(["Compras de urgencia en obra sin validar presupuesto", "Control de herramienta y equipo con QR entre bodega y Silao"]);
+      const [modoOfflineReq, setModoOfflineReq] = useState("Sí, indispensable modo sin señal en naves industriales / terracerías");
+      const [volumenDatos, setVolumenDatos] = useState("Entre 500 GB y 2 TB");
+      const [comentariosExtra, setComentariosExtra] = useState("");
+
+      const [piramide, setPiramide] = useState([
+        { id: 1, titulo: "Bóveda en la Nube, Carpetas Nestlé Silao y Respaldo Inmutable 3-2-1", desc: "Planos vigentes, contratos, fianzas y protección total anti-borrado/ransomware." },
+        { id: 2, titulo: "Renovación de PCs, Licencias Oficiales y Respaldo de Equipos Locales", desc: "Puesta a punto de computadoras de oficina/AutoCAD y respaldo de información actual." },
+        { id: 3, titulo: "Control de Compras, Requisiciones y Presupuesto en Tiempo Real", desc: "Autorización móvil de materiales antes de comprar y cruce contra estimaciones." },
+        { id: 4, titulo: "Almacén, Inventario de Materiales y Herramienta con QR", desc: "Entradas, salidas y resguardos firmados digitalmente entre bodega central y Silao." },
+        { id: 5, titulo: "App de Campo: Checador GPS (IMSS/DC-3), Bitácoras y Mantenimientos", desc: "Asistencia con foto/GPS en caseta, reportes fotográficos y firmas en pantalla." },
+        { id: 6, titulo: "Tablero Ejecutivo del Director (Avance Junio 2027 y Flujo de Caja)", desc: "Indicadores financieros, semáforo físico vs. gastado y alertas en vivo." }
+      ]);
+
+      const triggerCloudSync = (newLogText, logType = "SYNC") => {
+        setVaultFlash(true);
+        setTimeout(() => setVaultFlash(false), 1200);
+        setFeedLogs(prev => [{ time: "Justo ahora", type: logType, text: newLogText }, ...prev.slice(0, 7)]);
+      };
+
+      const handleMobileAction = (actionType) => {
+        let logMsg = "";
+        if (actionType === "ticket") {
+          logMsg = `Orden firmada (${signedBy}) en ${selectedSite} -> PDF guardado en carpeta auditable y respaldo 3-2-1`;
+          if (!offlineMode) setClosedTickets(c => c + 1);
+        } else if (actionType === "bitacora") {
+          logMsg = `Avance físico +2% reportado desde Planta Nestlé Purina Silao (Meta Junio 2027) con 4 fotos georreferenciadas`;
+          if (!offlineMode) {
+            setSilaoAdvance(a => Math.min(100, +(a + 2).toFixed(1)));
+            setSilaoSpentPct(s => Math.min(100, +(s + 1.6).toFixed(1)));
+          }
+        } else if (actionType === "req") {
+          const montoNum = Number(reqCost) || 45000;
+          logMsg = `Nueva Requisición Silao: ${reqMaterial} ($${montoNum.toLocaleString("es-MX")} MXN) enviada a celular del Director`;
+          if (!offlineMode) {
+            setOpenReqs(prev => [
+              { id: `REQ-${Math.floor(906 + Math.random() * 90)}`, obra: "Planta Nestlé Purina Silao", item: reqMaterial, monto: montoNum, solicitante: "Residente Silao", status: "Pendiente" },
+              ...prev
+            ]);
+          }
+        } else if (actionType === "checador") {
+          logMsg = `Check-in GPS Silao + Resguardo QR (${qrTool}) registrado: ${workerCheck}`;
+        }
+
+        if (offlineMode) {
+          setOfflineQueue(prev => [...prev, { actionType, logMsg }]);
+        } else {
+          triggerCloudSync(logMsg, actionType.toUpperCase());
+        }
+      };
+
+      const reconnectAndSync = () => {
+        setOfflineMode(false);
+        if (offlineQueue.length > 0) {
+          offlineQueue.forEach(item => {
+            if (item.actionType === "ticket") setClosedTickets(c => c + 1);
+            if (item.actionType === "bitacora") {
+              setSilaoAdvance(a => Math.min(100, +(a + 2).toFixed(1)));
+              setSilaoSpentPct(s => Math.min(100, +(s + 1.6).toFixed(1)));
+            }
+          });
+          triggerCloudSync(`Sincronización Offline exitosa: ${offlineQueue.length} reportes retenidos en nave sin señal subidos a la nube`, "OFFLINE-SYNC");
+          setOfflineQueue([]);
+        }
+      };
+
+      const handleApproveReq = (id, decision) => {
+        setOpenReqs(prev => prev.map(r => r.id === id ? { ...r, status: decision } : r));
+        triggerCloudSync(`Requisición ${id} ${decision.toUpperCase()} por Dirección General desde móvil`, "FINANZAS");
+      };
+
+      const toggleMulti = (list, setList, value) => {
+        if (list.includes(value)) {
+          setList(list.filter(i => i !== value));
+        } else {
+          setList([...list, value]);
+        }
+      };
+
+      const movePyramidItem = (index, dir) => {
+        const target = index + dir;
+        if (target < 0 || target >= piramide.length) return;
+        const copy = [...piramide];
+        const temp = copy[index];
+        copy[index] = copy[target];
+        copy[target] = temp;
+        setPiramide(copy);
+      };
+
+      useEffect(() => {
+        const onKey = (e) => {
+          if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+          if (e.key === "1") setMainTab("dual");
+          if (e.key === "2") setMainTab("director");
+          if (e.key === "3") setMainTab("campo");
+          if (e.key === "4") setMainTab("carpetas");
+          if (e.key === "5") setMainTab("diagnostico");
+          if (e.key.toLowerCase() === "r") handleMobileAction("bitacora");
+          if (e.key.toLowerCase() === "b") setShowVaultModal(v => !v);
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+      }, [offlineMode]);
+
+      const buildWhatsAppMessage = () => {
+        const lines = [
+          "*DIAGNÓSTICO EJECUTIVO CLOUD & TI — CASO PLANTA NESTLÉ PURINA SILAO*",
+          empresaNombre ? `Empresa: ${empresaNombre}` : null,
+          contactoNombre ? `Director / Contacto: ${contactoNombre}` : null,
+          "",
+          "*1. EQUIPO HUMANO Y ASISTENCIA*",
+          `• Oficina: ${empOficina} | Residentes/Sup: ${empResidentes} | Campo/Cuadrillas: ${empCampo}`,
+          `• Registro actual: ${checadorActual.join(", ") || "Por definir"}`,
+          "",
+          "*2. PARQUE DE CÓMPUTO, LICENCIAS Y RESPALDOS LOCALES*",
+          `• Equipos: ${pcOficina} PCs Oficina | ${pcCad} Estaciones AutoCAD/BIM | ${pcPortatiles} Laptops/Tablets`,
+          `• Acciones en equipos: ${accionComputo.join(", ") || "Por evaluar"}`,
+          `• Licencias requeridas: ${licenciasReq.join(", ") || "Por evaluar"}`,
+          `• Respaldo urgente en PCs: ${respaldosLocales.join(", ") || "Todo el disco"}`,
+          `• Volumen estimado: ${volumenDatos}`,
+          "",
+          "*3. COMPRAS, ALMACÉN Y OPERACIÓN SILAO*",
+          `• Prioridades en compras/bodega: ${doloresCompras.join(", ") || "Control integral"}`,
+          `• Modo Offline en obra: ${modoOfflineReq}`,
+          "",
+          "*4. PIRÁMIDE DE PRIORIDADES (DEL #1 MÁS URGENTE AL #6)*",
+          ...piramide.map((p, idx) => `${idx + 1}. ${p.titulo}`),
+          comentariosExtra ? `\n*Observaciones del Director:* ${comentariosExtra}` : ""
+        ].filter(Boolean).join("\n");
+        return lines;
+      };
+
+      const sendToWhatsApp = () => {
+        const text = encodeURIComponent(buildWhatsAppMessage());
+        window.open(`https://wa.me/525585176347?text=${text}`, "_blank");
+      };
+
+      const copySummary = () => {
+        navigator.clipboard.writeText(buildWhatsAppMessage());
+        alert("Resumen copiado al portapapeles.");
+      };
+
+      const renderMobileSimulator = () => (
+        <div className="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <span className={`w-2.5 h-2.5 rounded-full ${offlineMode ? "bg-amber-400 animate-pulse" : "bg-emerald-400"}`}></span>
+              <div>
+                <div className="text-xs font-bold tracking-wide">
+                  {offlineMode ? `MODO SIN SEÑAL (NAVE INDUSTRIAL) · ${offlineQueue.length} EN COLA` : "CONECTADO 4G/5G · NUBE SILAO ACTIVA"}
+                </div>
+                <div className="text-[11px] text-slate-400 mono">GPS Puerto Interior, Silao · 20.9961° N, 101.4862° W</div>
+              </div>
             </div>
-        </div>
+            {offlineMode ? (
+              <button onClick={reconnectAndSync} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition">
+                Reconectar y Subir ({offlineQueue.length})
+              </button>
+            ) : (
+              <button onClick={() => setOfflineMode(true)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                Simular Sin Señal
+              </button>
+            )}
+          </div>
 
-        <!-- CONTENIDO PESTAÑA 2 -->
-        <div id="tab2" class="tab-content">
-            <div class="module-card">
-                <h3>Módulo 2: Operaciones de Campo (App Móvil Residente / Técnico)</h3>
-                <p>Check-in validado por GPS, registros móviles de avances en tiempo real, validación de planos y generación de órdenes de trabajo firmadas digitalmente en sitio.</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-slate-800/90 p-1 rounded-xl mb-4 text-xs font-medium">
+            {[
+              { id: "ticket", label: "1. Orden + Firma" },
+              { id: "bitacora", label: "2. Avance Silao" },
+              { id: "req", label: "3. Pedir Material" },
+              { id: "checador", label: "4. Checador + QR" }
+            ].map(t => (
+              <button
+                key={t.id}
+                onClick={() => setMobileTab(t.id)}
+                className={`py-2 px-2 rounded-lg transition text-center ${mobileTab === t.id ? "bg-white text-slate-900 font-semibold shadow" : "text-slate-300 hover:text-white"}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white text-slate-900 rounded-2xl p-4 space-y-3.5">
+            {mobileTab === "ticket" && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 mono">FOLIO #SIL-409 · EN SITIO</span>
+                  <span className="text-xs font-semibold text-emerald-700">✓ Check-in GPS Silao OK</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Frente de Obra / Servicio Activo</label>
+                  <select value={selectedSite} onChange={e => setSelectedSite(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm font-medium bg-slate-50">
+                    <option>Planta Nestlé Purina Silao · Cimentación Nave Principal</option>
+                    <option>Planta Nestlé Purina Silao · Subestación Eléctrica 115kV</option>
+                    <option>Planta Nestlé Purina Silao · Red Contra Incendio NFPA</option>
+                    <option>Servicio Mantenimiento Externo · Póliza Industrial</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="text-[11px] font-bold text-slate-700">1. EVIDENCIA ANTES</div>
+                    <div className="text-[11px] text-slate-500 mono truncate">Armado_Acero_Eje4.jpg</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <div className="text-[11px] font-bold text-emerald-800">2. LIBERACIÓN CALIDAD</div>
+                    <div className="text-[11px] text-emerald-700 mono truncate">Colado_Nivel_OK.jpg</div>
+                  </div>
+                </div>
+                <div className="border border-dashed border-slate-300 rounded-xl p-3 bg-slate-50/60">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-semibold text-slate-600">Firma Digital en Pantalla (Liberación / Cliente)</span>
+                    <button onClick={() => setSignatureDone(!signatureDone)} className="text-[11px] text-blue-600 font-medium hover:underline">
+                      {signatureDone ? "Limpiar trazo" : "Firmar"}
+                    </button>
+                  </div>
+                  <div className="h-12 flex items-center justify-center">
+                    {signatureDone ? (
+                      <svg className="h-10 w-44 text-blue-900" viewBox="0 0 220 50" fill="none">
+                        <path d="M12 36 C35 10, 55 42, 82 22 C105 8, 128 38, 156 18 C174 10, 192 28, 208 16" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/>
+                      </svg>
+                    ) : (
+                      <span className="text-xs text-slate-400">Toque "Firmar" para capturar rúbrica</span>
+                    )}
+                  </div>
+                  <input value={signedBy} onChange={e => setSignedBy(e.target.value)} className="w-full text-center text-[11px] bg-transparent border-t border-slate-200 pt-1 text-slate-600 mono" />
+                </div>
+                <button onClick={() => handleMobileAction("ticket")} className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow transition">
+                  Cerrar Orden y Archivar PDF en Nube Silao
+                </button>
+              </>
+            )}
+
+            {mobileTab === "bitacora" && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">LICITACIÓN NESTLÉ PURINA SILAO</span>
+                  <span className="text-xs mono font-semibold px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded">Entrega: Junio 2027</span>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Avance Físico Acumulado:</span>
+                    <span className="font-bold mono text-slate-900">{silaoAdvance}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                    <div className="bg-blue-600 h-full transition-all duration-500" style={{ width: `${silaoAdvance}%` }}></div>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Partida activa: Terracerías, Cimentación Profunda y Estructura Metálica Nave 1.</div>
+                </div>
+                <button onClick={() => handleMobileAction("bitacora")} className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow transition">
+                  Subir Bitácora Diaria (+2% Avance + Fotos GPS)
+                </button>
+              </>
+            )}
+
+            {mobileTab === "req" && (
+              <>
+                <div className="text-xs font-bold text-slate-700">SOLICITUD DE COMPRA / MATERIAL EN OBRA</div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Material o Insumo Requerido</label>
+                  <input value={reqMaterial} onChange={e => setReqMaterial(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Importe Estimado (MXN) · Cruza vs. Presupuesto Opus</label>
+                  <input type="number" value={reqCost} onChange={e => setReqCost(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm mono" />
+                </div>
+                <button onClick={() => handleMobileAction("req")} className="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm shadow transition">
+                  Enviar Alerta de Aprobación al Director
+                </button>
+              </>
+            )}
+
+            {mobileTab === "checador" && (
+              <>
+                <div className="text-xs font-bold text-slate-700">CHECADOR BIOMÉTRICO GPS & BODEGA QR SILAO</div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Cuadrilla / Personal en Caseta de Acceso</label>
+                  <select value={workerCheck} onChange={e => setWorkerCheck(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs bg-slate-50">
+                    <option>Cuadrilla Montaje Estructural (12 personas · SUA/DC-3 Vigente)</option>
+                    <option>Cuadrilla Electromecánica (8 técnicos · Alturas DC-3 OK)</option>
+                    <option>Residentes e Ingeniería de Campo Silao (6 personas)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Escaneo QR de Maquinaria / Herramienta Asignada</label>
+                  <select value={qrTool} onChange={e => setQrTool(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs bg-slate-50 mono">
+                    <option>Estación Total Leica TS07 #QR-019</option>
+                    <option>Planta de Soldar Miller Bobcat 260 #QR-044</option>
+                    <option>Lote 6 Rotomartillos SDS-Max #QR-108</option>
+                  </select>
+                </div>
+                <button onClick={() => handleMobileAction("checador")} className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow transition">
+                  Registrar Entrada GPS + Resguardo QR
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      );
+
+      const renderDirectorDashboard = () => (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Obra Insignia · Jun 2027</div>
+              <div className="text-xl font-extrabold text-slate-900 mono mt-1">{silaoAdvance}% Físico</div>
+              <div className="text-xs text-emerald-700 font-medium mt-1">Gasto ejercido: {silaoSpentPct}% (Sano)</div>
             </div>
-        </div>
-
-        <!-- CONTENIDO PESTAÑA 3 -->
-        <div id="tab3" class="tab-content">
-            <div class="module-card">
-                <h3>Módulo 3: Control Financiero e Inventarios</h3>
-                <p>Monitoreo centralizado de insumos, costos operativos, integración con Opus/Neodata y trazabilidad completa de materiales de construcción y mantenimiento.</p>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Órdenes / Reportes Firmados</div>
+              <div className="text-xl font-extrabold text-blue-700 mono mt-1">{closedTickets} PDF</div>
+              <div className="text-xs text-slate-500 mt-1">Listos para estimación/factura</div>
             </div>
-        </div>
-
-        <!-- CONTENIDO PESTAÑA 4 -->
-        <div id="tab4" class="tab-content">
-            <div class="module-card">
-                <h3>Módulo 4: Tablero de Mando Ejecutivo y Bóveda Inmutable (3-2-1)</h3>
-                <p>Auditoría estricta de respaldos, seguridad inmutable contra modificaciones no autorizadas y visualización de KPIs de desempeño gerencial en tiempo real.</p>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Compras por Autorizar</div>
+              <div className="text-xl font-extrabold text-amber-600 mono mt-1">{openReqs.filter(r => r.status === "Pendiente").length} Activas</div>
+              <div className="text-xs text-slate-500 mt-1">Control anti-sobrecosto</div>
             </div>
-        </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Personal Activo Hoy (GPS)</div>
+              <div className="text-xl font-extrabold text-slate-900 mono mt-1">49 Personas</div>
+              <div className="text-xs text-emerald-700 mt-1">100% SUA IMSS / DC-3 al día</div>
+            </div>
+          </div>
 
-        <!-- CONTENIDO PESTAÑA 5: CUESTIONARIO INTEGRADO -->
-        <div id="tab5" class="tab-content">
-            <div class="questionnaire-box">
-                <h3>Cuestionario de Evaluación y Validación del Prototipo</h3>
-                <p>Estimado Daniel, por favor completa este breve cuestionario para registrar tus observaciones y validar la propuesta técnica de la plataforma.</p>
-                
-                <form onsubmit="submitEvaluation(event)">
-                    <div class="form-group">
-                        <label for="evaluador">Nombre del Evaluador:</label>
-                        <input type="text" id="evaluador" value="Daniel" required>
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Semáforo Maestro de Proyectos y Mantenimientos en Vivo</h3>
+                <p className="text-xs text-slate-500">Comparativa automática: Avance Físico en Campo vs. Presupuesto Ejercido</p>
+              </div>
+              <span className="text-[11px] mono px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">Sincronizado con Opus / ERP Cloud</span>
+            </div>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex flex-wrap justify-between font-semibold mb-1">
+                  <span>1. Construcción Planta Nestlé Purina · Silao, Gto. (Meta: Junio 2027)</span>
+                  <span className="text-emerald-700 mono">EN TIEMPO Y COSTO · Avance {silaoAdvance}% vs Gasto {silaoSpentPct}%</span>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-emerald-600 h-full transition-all duration-500" style={{ width: `${silaoAdvance}%` }}></div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex flex-wrap justify-between font-semibold mb-1">
+                  <span>2. Pólizas de Mantenimiento Industrial Electromecánico (Bajío / Centro)</span>
+                  <span className="text-blue-700 mono">SLA 98.4% · {closedTickets} servicios cerrados este mes</span>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-blue-600 h-full" style={{ width: "84%" }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 mb-2.5">Autorización de Compras y Materiales desde tu Celular</h3>
+              <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                {openReqs.map(req => (
+                  <div key={req.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <span className="text-[11px] font-bold mono text-slate-500">{req.id} · {req.obra}</span>
+                        <div className="text-xs font-bold text-slate-900">{req.item}</div>
+                      </div>
+                      <span className="text-xs font-extrabold mono text-slate-900">${req.monto.toLocaleString("es-MX")}</span>
                     </div>
-
-                    <div class="form-group">
-                        <label for="p1">1. ¿Qué tan adecuada consideras la estructura de carpetas y permisos RBAC por roles?</label>
-                        <select id="p1" required>
-                            <option value="">Selecciona una opción...</option>
-                            <option value="excelente">Excelente y muy clara</option>
-                            <option value="adecuada">Adecuada, cumple con lo necesario</option>
-                            <option value="requiere_cambios">Requiere ajustes</option>
-                        </select>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500">Solicita: {req.solicitante}</span>
+                      {req.status === "Pendiente" ? (
+                        <div className="flex gap-1.5">
+                          <button onClick={() => handleApproveReq(req.id, "Aprobada")} className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold">Aprobar</button>
+                          <button onClick={() => handleApproveReq(req.id, "Rechazada")} className="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-semibold">Detener</button>
+                        </div>
+                      ) : (
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${req.status === "Aprobada" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+                          {req.status}
+                        </span>
+                      )}
                     </div>
-
-                    <div class="form-group">
-                        <label for="p2">2. ¿Validas positivamente la integración de la App de Campo con el Tablero Gerencial?</label>
-                        <select id="p2" required>
-                            <option value="">Selecciona una opción...</option>
-                            <option value="si">Sí, apruebo el flujo operativo</option>
-                            <option value="observaciones">Sí, con observaciones menores</option>
-                            <option value="no">No, se sugiere replantear</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="comentarios">Comentarios generales o ajustes solicitados:</label>
-                        <textarea id="comentarios" rows="4" placeholder="Escribe aquí tus observaciones o notas sobre el prototipo..."></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Enviar Evaluación del Prototipo</button>
-                </form>
+                  </div>
+                ))}
+              </div>
             </div>
-        </div>
 
-        <div class="footer">
-            Proyecto de Infraestructura y Mantenimiento · Conclusión estimada: Junio 2027
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 mb-2.5">Bitácora de Eventos Cloud en Tiempo Real</h3>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {feedLogs.map((log, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-start gap-2.5">
+                    <span className="text-[10px] font-bold mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 shrink-0">{log.type}</span>
+                    <div className="flex-1">
+                      <div className="text-slate-800 font-medium leading-snug">{log.text}</div>
+                      <div className="text-[10px] text-slate-400 mono mt-0.5">{log.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-</body>
-</html>
+      );
+
+      return (
+        <div className="min-h-screen flex flex-col pb-14">
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-sm mono shadow">
+                  C360
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                      Caso Real · Planta Nestlé Purina Silao (Junio 2027)
+                    </span>
+                  </div>
+                  <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight mt-0.5">
+                    CONSTRUCTORA & MANTENIMIENTO CLOUD · CONTROL EN TIEMPO REAL
+                  </h1>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowVaultModal(true)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border flex items-center gap-2 transition ${
+                    vaultFlash ? "bg-emerald-600 text-white border-emerald-600 scale-105" : "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  Bóveda Inmutable 3-2-1: ACTIVA
+                </button>
+                <button
+                  onClick={() => handleMobileAction("bitacora")}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition"
+                >
+                  + Simular Reporte Silao
+                </button>
+              </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 pb-2.5 flex gap-2 overflow-x-auto">
+              {[
+                { id: "dual", label: "1. Vista Dual En Vivo (Campo Silao → Director)" },
+                { id: "director", label: "2. Solo Dashboard Director (PC / Tablet)" },
+                { id: "campo", label: "3. Solo App Móvil Campo (Residente Silao)" },
+                { id: "carpetas", label: "4. Carpetas Nestlé, Permisos y Cómputo TI" },
+                { id: "diagnostico", label: "5. Diagnóstico TI & Pirámide (Enviar a WhatsApp)", highlight: true }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setMainTab(tab.id)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
+                    mainTab === tab.id
+                      ? tab.highlight
+                        ? "bg-emerald-700 text-white border-emerald-700 shadow"
+                        : "bg-slate-900 text-white border-slate-900 shadow"
+                      : tab.highlight
+                      ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                      : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </header>
+
+          <main className="max-w-7xl w-full mx-auto px-4 py-5 flex-1">
+            {mainTab === "dual" && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                <div className="lg:col-span-5">
+                  <div className="text-xs font-bold uppercase text-slate-500 mb-2 flex justify-between">
+                    <span>• Celular en Caseta / Nave Silao</span>
+                    <span className="mono">iOS · Android · Offline OK</span>
+                  </div>
+                  {renderMobileSimulator()}
+                </div>
+                <div className="lg:col-span-7">
+                  <div className="text-xs font-bold uppercase text-slate-500 mb-2 flex justify-between">
+                    <span>• Pantalla en Vivo del Director General</span>
+                    <span className="mono">Actualización Instantánea</span>
+                  </div>
+                  {renderDirectorDashboard()}
+                </div>
+              </div>
+            )}
+
+            {mainTab === "director" && renderDirectorDashboard()}
+
+            {mainTab === "campo" && (
+              <div className="max-w-lg mx-auto">
+                {renderMobileSimulator()}
+              </div>
+            )}
+
+            {mainTab === "carpetas" && (
+              <div className="space-y-5">
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                      <h2 className="text-base font-extrabold text-slate-900">Estructura Maestra en la Nube y Blindaje por Rol (RBAC)</h2>
+                      <p className="text-xs text-slate-500">Prueba cambiar de usuario para verificar qué carpetas ve y cuáles quedan ocultas en Silao y Oficina:</p>
+                    </div>
+                    <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+                      {["Director", "Residente Silao", "Técnico Mantenimiento"].map(r => (
+                        <button
+                          key={r}
+                          onClick={() => setRoleView(r)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${roleView === r ? "bg-slate-900 text-white shadow" : "text-slate-600 hover:text-slate-900"}`}
+                        >
+                          Ver como: {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    {[
+                      { folder: "01_DIRECCION_FINANZAS_Y_BANCOS", desc: "Estados financieros, cuentas bancarias, actas y poderes.", allowed: ["Director"] },
+                      { folder: "02_LICITACION_NESTLE_PURINA_SILAO_COSTOS", desc: "Presupuesto maestro Opus/Neodata, márgenes de utilidad, fianzas y contrato.", allowed: ["Director"] },
+                      { folder: "03_OBRA_SILAO_INGENIERIA_Y_PLANOS_VIGENTES", desc: "Planos CAD/BIM aprobados para construcción (Junio 2027). Residentes: Solo Lectura.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "04_OBRA_SILAO_EHS_SEGURIDAD_REPSE_DC3", desc: "Altas IMSS/SUA, certificados DC-3, permisos de trabajo seguro Nestlé y bitácoras.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "05_COMPRAS_ALMACEN_Y_RESGUARDOS_QR", desc: "Requisiciones autorizadas, inventario de materiales y asignación QR de herramienta.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "06_SERVICIOS_MANTENIMIENTO_TICKETS_PDF", desc: "Órdenes de trabajo con fotos GPS y firma digital para facturación inmediata.", allowed: ["Director", "Residente Silao", "Técnico Mantenimiento"] }
+                    ].map((item, idx) => {
+                      const hasAccess = item.allowed.includes(roleView);
+                      return (
+                        <div key={idx} className={`p-4 rounded-xl border flex items-start justify-between gap-3 ${hasAccess ? "bg-emerald-50/40 border-emerald-200" : "bg-slate-100 border-slate-200 opacity-65"}`}>
+                          <div>
+                            <div className="font-bold mono text-slate-900">{item.folder}</div>
+                            <p className="text-slate-600 mt-1">{item.desc}</p>
+                          </div>
+                          <span className={`px-2.5 py-1 rounded-md font-bold text-[11px] shrink-0 ${hasAccess ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+                            {hasAccess ? (roleView === "Director" ? "CONTROL TOTAL" : "ACCESO PERMITIDO") : "OCULTO / BLOQUEADO"}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                  <h3 className="text-sm font-extrabold text-slate-900 mb-2">Plan de Renovación de Cómputo, Licencias y Respaldo de Equipos</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">1. Respaldo Previo de PCs Actuales</div>
+                      <p className="text-slate-600">Extracción completa de Escritorio, Documentos, correos Outlook (.PST) y bases contables/Opus antes de tocar o reemplazar cualquier computadora.</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">2. Estaciones CAD y Laptops Silao</div>
+                      <p className="text-slate-600">Actualización con unidades NVMe/RAM para equipos recuperables y suministro de workstations/laptops listas para caseta de obra en Silao.</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">3. Licenciamiento y Bóveda 3-2-1</div>
+                      <p className="text-slate-600">Regularización Windows Pro, M365/Workspace, AutoCAD y agente silencioso que respalda cada PC diario en bóveda fría inmutable.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {mainTab === "diagnostico" && (
+              <div className="space-y-6">
+                <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-md">
+                  <span className="text-[11px] font-bold uppercase px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                    Diagnóstico Interactivo · 2 Minutos
+                  </span>
+                  <h2 className="text-lg font-extrabold mt-2">Dimensionamiento de Cómputo, Licencias, Nube y Operación Silao</h2>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Marca las opciones que reflejen tu operación actual y ordena la Pirámide de Prioridades al final para enviarme tus observaciones con un clic.
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Nombre de la Empresa (Opcional)</label>
+                    <input value={empresaNombre} onChange={e => setEmpresaNombre(e.target.value)} placeholder="Ej. Constructora e Ingeniería..." className="w-full rounded-xl border border-slate-300 px-3 py-2" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Tu Nombre / Cargo (Opcional)</label>
+                    <input value={contactoNombre} onChange={e => setContactoNombre(e.target.value)} placeholder="Director General" className="w-full rounded-xl border border-slate-300 px-3 py-2" />
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="text-sm font-extrabold text-slate-900">1. Personal, Asistencia y Checador en Obra</h3>
+                  <div className="grid grid-cols-1 sm:grid

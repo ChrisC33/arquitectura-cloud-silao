@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arquitectura Cloud - Nestlé Purina Silao</title>
+    <title>Arquitectura Cloud - Planta Nestlé Purina Silao</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -57,8 +57,15 @@
         .action-section {
             text-align: center;
             background: #eef4f8;
-            padding: 25px;
+            padding: 30px;
             border-radius: 8px;
+            margin-top: 20px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
             margin-top: 20px;
         }
         .btn {
@@ -66,7 +73,7 @@
             background-color: #0066cc;
             color: white;
             padding: 12px 25px;
-            font-size: 1.1em;
+            font-size: 1.05em;
             text-decoration: none;
             border-radius: 6px;
             font-weight: bold;
@@ -75,6 +82,13 @@
         }
         .btn:hover {
             background-color: #004d99;
+        }
+        .btn-secondary {
+            background-color: #28a745;
+            box-shadow: 0 3px 6px rgba(40,167,69,0.3);
+        }
+        .btn-secondary:hover {
+            background-color: #218838;
         }
         .footer {
             text-align: center;
@@ -91,29 +105,34 @@
         
         <div class="modules-grid">
             <div class="module-card">
-                <h3>1. Respaldo Documental Inmutable</h3>
-                <p>Almacenamiento seguro con políticas de retención estrictas y control de accesos por roles (RBAC).</p>
+                <h3>1. Cerebro Documental y Seguridad RBAC</h3>
+                <p>Almacenamiento estructurado con control de accesos por roles y protección de carpetas confidenciales.</p>
             </div>
             <div class="module-card">
-                <h3>2. Operaciones de Campo (App)</h3>
-                <p>Check-in por GPS, registros móviles en tiempo real y validación mediante firmas digitales.</p>
+                <h3>2. Operaciones de Campo (App Móvil)</h3>
+                <p>Check-in por GPS, registros móviles en tiempo real, órdenes firmadas y bitácoras vivas.</p>
             </div>
             <div class="module-card">
                 <h3>3. Control Financiero e Inventarios</h3>
-                <p>Monitoreo centralizado de insumos, costos operativos y trazabilidad de materiales.</p>
+                <p>Monitoreo centralizado de insumos, costos operativos, Opus/Neodata y trazabilidad de materiales.</p>
             </div>
             <div class="module-card">
-                <h3>4. Tablero de Mando Ejecutivo</h3>
-                <p>Visualización de métricas clave, KPIs de desempeño y reportes gerenciales en tiempo real.</p>
+                <h3>4. Bóveda Inmutable y Tablero Ejecutivo</h3>
+                <p>Auditoría estricta 3-2-1, respaldos automáticos y visualización de KPIs gerenciales en tiempo real.</p>
             </div>
         </div>
 
         <div class="action-section">
             <h3>Evaluación y Prototipo Funcional</h3>
-            <p>Por favor, realiza el cuestionario de validación y explora el prototipo interactivo para conocer la propuesta completa.</p>
-            <br>
-            <!-- REEMPLAZA EL ENLACE DE ABAJO CON TU LINK DEL CUESTIONARIO O FORMULARIO (Google Forms, Typeform, etc.) -->
-            <a href="https://share.gemini.google/5d1kvFVfzKNT" class="btn" target="_blank">Iniciar Cuestionario y Ver Prototipo</a>
+            <p>Explora el sistema en vivo simulando los diferentes roles y completa el cuestionario de validación del proyecto.</p>
+            
+            <div class="btn-group">
+                <!-- ENLACE AL PROTOTIPO EN VIVO -->
+                <a href="https://share.gemini.google/5d1kvFVfzKNT" class="btn btn-secondary" target="_blank">💻 Ver Prototipo Funcional en Vivo</a>
+                
+                <!-- ENLACE AL CUESTIONARIO (Reemplaza con tu link de Google Forms si lo tienes) -->
+                <a href="https://share.gemini.google/5d1kvFVfzKNT" class="btn" target="_blank">📋 Responder Cuestionario</a>
+            </div>
         </div>
 
         <div class="footer">

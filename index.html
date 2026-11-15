@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arquitectura Cloud 360° · Caso Planta Nestlé Purina Silao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { background-color: #F8FAFC; color: #0F172A; font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { height: 6px; width: 6px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [mainTab, setMainTab] = useState("dual");
+      const [mobileTab, setMobileTab] = useState("ticket");
+      const [offlineMode, setOfflineMode] = useState(false);
+      const [offlineQueue, setOfflineQueue] = useState([]);
+      const [vaultFlash, setVaultFlash] = useState(false);
+      const [showVaultModal, setShowVaultModal] = useState(false);
+
+      // Estado Operativo en Tiempo Real (Caso Nestlé Purina Silao)
+      const [silaoAdvance, setSilaoAdvance] = useState(18);
+      const [silaoSpentPct, setSilaoSpentPct] = useState(16.5);
+      const [closedTickets, setClosedTickets] = useState(14);
+      const [openReqs, setOpenReqs] = useState([
+        { id: "REQ-904", obra: "Planta Nestlé Purina Silao · Nave Proceso", item: "Acero Estructural A-36 (18 Ton)", monto: 468000, solicitante: "Ing. Residente Silao", status: "Pendiente" },
+        { id: "REQ-905", obra: "Planta Nestlé Purina Silao · Subestación", item: "Charola Portacable Aluminio 24"", monto: 84500, solicitante: "Sup. Electromecánico", status: "Pendiente" }
+      ]);
+      const [feedLogs, setFeedLogs] = useState([
+        { time: "Hace 8 min", type: "GPS", text: "Check-in Asistencia (24 técnicos IMSS/DC-3 OK) — Caseta Norte Nestlé Purina Silao (20.9961° N, 101.4862° W)" },
+        { time: "Hace 22 min", type: "CAD", text: "Plano Estructural E-104 Rev.3 sincronizado en modo Solo Lectura para tabletas en Silao" },
+        { time: "Hace 45 min", type: "BACKUP", text: "Respaldo Inmutable 3-2-1 completado: 1.42 TB encriptados (Estaciones AutoCAD + Servidor Opus)" }
+      ]);
+
+      // Campos de la App Móvil
+      const [selectedSite, setSelectedSite] = useState("Planta Nestlé Purina Silao · Cimentación Nave Principal");
+      const [signedBy, setSignedBy] = useState("Ing. Supervisor EHS / Control de Calidad Silao");
+      const [signatureDone, setSignatureDone] = useState(true);
+      const [reqMaterial, setReqMaterial] = useState("Concreto Premezclado f'c=350 kg/cm² (42 m³)");
+      const [reqCost, setReqCost] = useState("136500");
+      const [qrTool, setQrTool] = useState("Estación Total Leica TS07 #QR-019");
+      const [workerCheck, setWorkerCheck] = useState("Cuadrilla Montaje Estructural (12 personas · SUA/DC-3 Vigente)");
+
+      // Pestaña 4: Rol RBAC
+      const [roleView, setRoleView] = useState("Director");
+
+      // Pestaña 5: Diagnóstico Ejecutivo
+      const [empresaNombre, setEmpresaNombre] = useState("");
+      const [contactoNombre, setContactoNombre] = useState("");
+      const [empOficina, setEmpOficina] = useState(8);
+      const [empResidentes, setEmpResidentes] = useState(6);
+      const [empCampo, setEmpCampo] = useState(35);
+      const [pcOficina, setPcOficina] = useState(6);
+      const [pcCad, setPcCad] = useState(4);
+      const [pcPortatiles, setPcPortatiles] = useState(5);
+      const [accionComputo, setAccionComputo] = useState(["Actualizar equipos lentos (SSD/RAM)", "Adquirir equipos nuevos para proyecto Silao"]);
+      const [licenciasReq, setLicenciasReq] = useState(["Windows Pro", "Microsoft 365 / Google Workspace", "AutoCAD / BIM", "Opus / CONTPAQi en Nube", "Antivirus Empresarial"]);
+      const [respaldosLocales, setRespaldosLocales] = useState(["Carpetas Mis Documentos / Escritorio de cada PC", "Correos históricos (.PST Outlook)", "Bases de datos Opus / Neodata / Contabilidad", "Respaldo diario automático sin intervención"]);
+      const [checadorActual, setChecadorActual] = useState(["Listas en papel / Excel por residente", "Mensajes por grupos de WhatsApp"]);
+      const [doloresCompras, setDoloresCompras] = useState(["Compras de urgencia en obra sin validar presupuesto", "Control de herramienta y equipo con QR entre bodega y Silao"]);
+      const [modoOfflineReq, setModoOfflineReq] = useState("Sí, indispensable modo sin señal en naves industriales / terracerías");
+      const [volumenDatos, setVolumenDatos] = useState("Entre 500 GB y 2 TB");
+      const [comentariosExtra, setComentariosExtra] = useState("");
+
+      const [piramide, setPiramide] = useState([
+        { id: 1, titulo: "Bóveda en la Nube, Carpetas Nestlé Silao y Respaldo Inmutable 3-2-1", desc: "Planos vigentes, contratos, fianzas y protección total anti-borrado/ransomware." },
+        { id: 2, titulo: "Renovación de PCs, Licencias Oficiales y Respaldo de Equipos Locales", desc: "Puesta a punto de computadoras de oficina/AutoCAD y respaldo de información actual." },
+        { id: 3, titulo: "Control de Compras, Requisiciones y Presupuesto en Tiempo Real", desc: "Autorización móvil de materiales antes de comprar y cruce contra estimaciones." },
+        { id: 4, titulo: "Almacén, Inventario de Materiales y Herramienta con QR", desc: "Entradas, salidas y resguardos firmados digitalmente entre bodega central y Silao." },
+        { id: 5, titulo: "App de Campo: Checador GPS (IMSS/DC-3), Bitácoras y Mantenimientos", desc: "Asistencia con foto/GPS en caseta, reportes fotográficos y firmas en pantalla." },
+        { id: 6, titulo: "Tablero Ejecutivo del Director (Avance Junio 2027 y Flujo de Caja)", desc: "Indicadores financieros, semáforo físico vs. gastado y alertas en vivo." }
+      ]);
+
+      const triggerCloudSync = (newLogText, logType = "SYNC") => {
+        setVaultFlash(true);
+        setTimeout(() => setVaultFlash(false), 1200);
+        setFeedLogs(prev => [{ time: "Justo ahora", type: logType, text: newLogText }, ...prev.slice(0, 7)]);
+      };
+
+      const handleMobileAction = (actionType) => {
+        let logMsg = "";
+        if (actionType === "ticket") {
+          logMsg = `Orden firmada (${signedBy}) en ${selectedSite} -> PDF guardado en carpeta auditable y respaldo 3-2-1`;
+          if (!offlineMode) setClosedTickets(c => c + 1);
+        } else if (actionType === "bitacora") {
+          logMsg = `Avance físico +2% reportado desde Planta Nestlé Purina Silao (Meta Junio 2027) con 4 fotos georreferenciadas`;
+          if (!offlineMode) {
+            setSilaoAdvance(a => Math.min(100, +(a + 2).toFixed(1)));
+            setSilaoSpentPct(s => Math.min(100, +(s + 1.6).toFixed(1)));
+          }
+        } else if (actionType === "req") {
+          const montoNum = Number(reqCost) || 45000;
+          logMsg = `Nueva Requisición Silao: ${reqMaterial} ($${montoNum.toLocaleString("es-MX")} MXN) enviada a celular del Director`;
+          if (!offlineMode) {
+            setOpenReqs(prev => [
+              { id: `REQ-${Math.floor(906 + Math.random() * 90)}`, obra: "Planta Nestlé Purina Silao", item: reqMaterial, monto: montoNum, solicitante: "Residente Silao", status: "Pendiente" },
+              ...prev
+            ]);
+          }
+        } else if (actionType === "checador") {
+          logMsg = `Check-in GPS Silao + Resguardo QR (${qrTool}) registrado: ${workerCheck}`;
+        }
+
+        if (offlineMode) {
+          setOfflineQueue(prev => [...prev, { actionType, logMsg }]);
+        } else {
+          triggerCloudSync(logMsg, actionType.toUpperCase());
+        }
+      };
+
+      const reconnectAndSync = () => {
+        setOfflineMode(false);
+        if (offlineQueue.length > 0) {
+          offlineQueue.forEach(item => {
+            if (item.actionType === "ticket") setClosedTickets(c => c + 1);
+            if (item.actionType === "bitacora") {
+              setSilaoAdvance(a => Math.min(100, +(a + 2).toFixed(1)));
+              setSilaoSpentPct(s => Math.min(100, +(s + 1.6).toFixed(1)));
+            }
+          });
+          triggerCloudSync(`Sincronización Offline exitosa: ${offlineQueue.length} reportes retenidos en nave sin señal subidos a la nube`, "OFFLINE-SYNC");
+          setOfflineQueue([]);
+        }
+      };
+
+      const handleApproveReq = (id, decision) => {
+        setOpenReqs(prev => prev.map(r => r.id === id ? { ...r, status: decision } : r));
+        triggerCloudSync(`Requisición ${id} ${decision.toUpperCase()} por Dirección General desde móvil`, "FINANZAS");
+      };
+
+      const toggleMulti = (list, setList, value) => {
+        if (list.includes(value)) {
+          setList(list.filter(i => i !== value));
+        } else {
+          setList([...list, value]);
+        }
+      };
+
+      const movePyramidItem = (index, dir) => {
+        const target = index + dir;
+        if (target < 0 || target >= piramide.length) return;
+        const copy = [...piramide];
+        const temp = copy[index];
+        copy[index] = copy[target];
+        copy[target] = temp;
+        setPiramide(copy);
+      };
+
+      // Atajos de teclado para presentación ejecutiva
+      useEffect(() => {
+        const onKey = (e) => {
+          if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+          if (e.key === "1") setMainTab("dual");
+          if (e.key === "2") setMainTab("director");
+          if (e.key === "3") setMainTab("campo");
+          if (e.key === "4") setMainTab("carpetas");
+          if (e.key === "5") setMainTab("diagnostico");
+          if (e.key.toLowerCase() === "r") handleMobileAction("bitacora");
+          if (e.key.toLowerCase() === "b") setShowVaultModal(v => !v);
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+      }, [offlineMode]);
+
+      const buildWhatsAppMessage = () => {
+        const lines = [
+          "*DIAGNÓSTICO EJECUTIVO CLOUD & TI — CASO PLANTA NESTLÉ PURINA SILAO*",
+          empresaNombre ? `Empresa: ${empresaNombre}` : null,
+          contactoNombre ? `Director / Contacto: ${contactoNombre}` : null,
+          "",
+          "*1. EQUIPO HUMANO Y ASISTENCIA*",
+          `• Oficina: ${empOficina} | Residentes/Sup: ${empResidentes} | Campo/Cuadrillas: ${empCampo}`,
+          `• Registro actual: ${checadorActual.join(", ") || "Por definir"}`,
+          "",
+          "*2. PARQUE DE CÓMPUTO, LICENCIAS Y RESPALDOS LOCALES*",
+          `• Equipos: ${pcOficina} PCs Oficina | ${pcCad} Estaciones AutoCAD/BIM | ${pcPortatiles} Laptops/Tablets`,
+          `• Acciones en equipos: ${accionComputo.join(", ") || "Por evaluar"}`,
+          `• Licencias requeridas: ${licenciasReq.join(", ") || "Por evaluar"}`,
+          `• Respaldo urgente en PCs: ${respaldosLocales.join(", ") || "Todo el disco"}`,
+          `• Volumen estimado: ${volumenDatos}`,
+          "",
+          "*3. COMPRAS, ALMACÉN Y OPERACIÓN SILAO*",
+          `• Prioridades en compras/bodega: ${doloresCompras.join(", ") || "Control integral"}`,
+          `• Modo Offline en obra: ${modoOfflineReq}`,
+          "",
+          "*4. PIRÁMIDE DE PRIORIDADES (DEL #1 MÁS URGENTE AL #6)*",
+          ...piramide.map((p, idx) => `${idx + 1}. ${p.titulo}`),
+          comentariosExtra ? `
+*Observaciones del Director:* ${comentariosExtra}` : ""
+        ].filter(Boolean).join("
+");
+        return lines;
+      };
+
+      const sendToWhatsApp = () => {
+        const text = encodeURIComponent(buildWhatsAppMessage());
+        window.open(`https://wa.me/525585176347?text=${text}`, "_blank");
+      };
+
+      const copySummary = () => {
+        navigator.clipboard.writeText(buildWhatsAppMessage());
+        alert("Resumen copiado al portapapeles.");
+      };
+
+      // Componente App Móvil
+      const renderMobileSimulator = () => (
+        <div className="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-xl border border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <span className={`w-2.5 h-2.5 rounded-full ${offlineMode ? "bg-amber-400 animate-pulse" : "bg-emerald-400"}`}></span>
+              <div>
+                <div className="text-xs font-bold tracking-wide">
+                  {offlineMode ? `MODO SIN SEÑAL (NAVE INDUSTRIAL) · ${offlineQueue.length} EN COLA` : "CONECTADO 4G/5G · NUBE SILAO ACTIVA"}
+                </div>
+                <div className="text-[11px] text-slate-400 mono">GPS Puerto Interior, Silao · 20.9961° N, 101.4862° W</div>
+              </div>
+            </div>
+            {offlineMode ? (
+              <button onClick={reconnectAndSync} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition">
+                Reconectar y Subir ({offlineQueue.length})
+              </button>
+            ) : (
+              <button onClick={() => setOfflineMode(true)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                Simular Sin Señal
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-slate-800/90 p-1 rounded-xl mb-4 text-xs font-medium">
+            {[
+              { id: "ticket", label: "1. Orden + Firma" },
+              { id: "bitacora", label: "2. Avance Silao" },
+              { id: "req", label: "3. Pedir Material" },
+              { id: "checador", label: "4. Checador + QR" }
+            ].map(t => (
+              <button
+                key={t.id}
+                onClick={() => setMobileTab(t.id)}
+                className={`py-2 px-2 rounded-lg transition text-center ${mobileTab === t.id ? "bg-white text-slate-900 font-semibold shadow" : "text-slate-300 hover:text-white"}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white text-slate-900 rounded-2xl p-4 space-y-3.5">
+            {mobileTab === "ticket" && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 mono">FOLIO #SIL-409 · EN SITIO</span>
+                  <span className="text-xs font-semibold text-emerald-700">✓ Check-in GPS Silao OK</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Frente de Obra / Servicio Activo</label>
+                  <select value={selectedSite} onChange={e => setSelectedSite(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm font-medium bg-slate-50">
+                    <option>Planta Nestlé Purina Silao · Cimentación Nave Principal</option>
+                    <option>Planta Nestlé Purina Silao · Subestación Eléctrica 115kV</option>
+                    <option>Planta Nestlé Purina Silao · Red Contra Incendio NFPA</option>
+                    <option>Servicio Mantenimiento Externo · Póliza Industrial</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div className="text-[11px] font-bold text-slate-700">1. EVIDENCIA ANTES</div>
+                    <div className="text-[11px] text-slate-500 mono truncate">Armado_Acero_Eje4.jpg</div>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                    <div className="text-[11px] font-bold text-emerald-800">2. LIBERACIÓN CALIDAD</div>
+                    <div className="text-[11px] text-emerald-700 mono truncate">Colado_Nivel_OK.jpg</div>
+                  </div>
+                </div>
+                <div className="border border-dashed border-slate-300 rounded-xl p-3 bg-slate-50/60">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-semibold text-slate-600">Firma Digital en Pantalla (Liberación / Cliente)</span>
+                    <button onClick={() => setSignatureDone(!signatureDone)} className="text-[11px] text-blue-600 font-medium hover:underline">
+                      {signatureDone ? "Limpiar trazo" : "Firmar"}
+                    </button>
+                  </div>
+                  <div className="h-12 flex items-center justify-center">
+                    {signatureDone ? (
+                      <svg className="h-10 w-44 text-blue-900" viewBox="0 0 220 50" fill="none">
+                        <path d="M12 36 C35 10, 55 42, 82 22 C105 8, 128 38, 156 18 C174 10, 192 28, 208 16" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/>
+                      </svg>
+                    ) : (
+                      <span className="text-xs text-slate-400">Toque"Firmar" para capturar rúbrica</span>
+                    )}
+                  </div>
+                  <input value={signedBy} onChange={e => setSignedBy(e.target.value)} className="w-full text-center text-[11px] bg-transparent border-t border-slate-200 pt-1 text-slate-600 mono" />
+                </div>
+                <button onClick={() => handleMobileAction("ticket")} className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow transition">
+                  Cerrar Orden y Archivar PDF en Nube Silao
+                </button>
+              </>
+            )}
+
+            {mobileTab === "bitacora" && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">LICITACIÓN NESTLÉ PURINA SILAO</span>
+                  <span className="text-xs mono font-semibold px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded">Entrega: Junio 2027</span>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Avance Físico Acumulado:</span>
+                    <span className="font-bold mono text-slate-900">{silaoAdvance}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                    <div className="bg-blue-600 h-full transition-all duration-500" style={{ width: `${silaoAdvance}%` }}></div>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Partida activa: Terracerías, Cimentación Profunda y Estructura Metálica Nave 1.</div>
+                </div>
+                <button onClick={() => handleMobileAction("bitacora")} className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow transition">
+                  Subir Bitácora Diaria (+2% Avance + Fotos GPS)
+                </button>
+              </>
+            )}
+
+            {mobileTab === "req" && (
+              <>
+                <div className="text-xs font-bold text-slate-700">SOLICITUD DE COMPRA / MATERIAL EN OBRA</div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Material o Insumo Requerido</label>
+                  <input value={reqMaterial} onChange={e => setReqMaterial(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Importe Estimado (MXN) · Cruza vs. Presupuesto Opus</label>
+                  <input type="number" value={reqCost} onChange={e => setReqCost(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs sm:text-sm mono" />
+                </div>
+                <button onClick={() => handleMobileAction("req")} className="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm shadow transition">
+                  Enviar Alerta de Aprobación al Director
+                </button>
+              </>
+            )}
+
+            {mobileTab === "checador" && (
+              <>
+                <div className="text-xs font-bold text-slate-700">CHECADOR BIOMÉTRICO GPS & BODEGA QR SILAO</div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Cuadrilla / Personal en Caseta de Acceso</label>
+                  <select value={workerCheck} onChange={e => setWorkerCheck(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs bg-slate-50">
+                    <option>Cuadrilla Montaje Estructural (12 personas · SUA/DC-3 Vigente)</option>
+                    <option>Cuadrilla Electromecánica (8 técnicos · Alturas DC-3 OK)</option>
+                    <option>Residentes e Ingeniería de Campo Silao (6 personas)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-600 mb-1">Escaneo QR de Maquinaria / Herramienta Asignada</label>
+                  <select value={qrTool} onChange={e => setQrTool(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs bg-slate-50 mono">
+                    <option>Estación Total Leica TS07 #QR-019</option>
+                    <option>Planta de Soldar Miller Bobcat 260 #QR-044</option>
+                    <option>Lote 6 Rotomartillos SDS-Max #QR-108</option>
+                  </select>
+                </div>
+                <button onClick={() => handleMobileAction("checador")} className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow transition">
+                  Registrar Entrada GPS + Resguardo QR
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      );
+
+      // Componente Dashboard Ejecutivo Director
+      const renderDirectorDashboard = () => (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Obra Insignia · Jun 2027</div>
+              <div className="text-xl font-extrabold text-slate-900 mono mt-1">{silaoAdvance}% Físico</div>
+              <div className="text-xs text-emerald-700 font-medium mt-1">Gasto ejercido: {silaoSpentPct}% (Sano)</div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Órdenes / Reportes Firmados</div>
+              <div className="text-xl font-extrabold text-blue-700 mono mt-1">{closedTickets} PDF</div>
+              <div className="text-xs text-slate-500 mt-1">Listos para estimación/factura</div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Compras por Autorizar</div>
+              <div className="text-xl font-extrabold text-amber-600 mono mt-1">{openReqs.filter(r => r.status === "Pendiente").length} Activas</div>
+              <div className="text-xs text-slate-500 mt-1">Control anti-sobrecosto</div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-semibold uppercase text-slate-500">Personal Activo Hoy (GPS)</div>
+              <div className="text-xl font-extrabold text-slate-900 mono mt-1">49 Personas</div>
+              <div className="text-xs text-emerald-700 mt-1">100% SUA IMSS / DC-3 al día</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Semáforo Maestro de Proyectos y Mantenimientos en Vivo</h3>
+                <p className="text-xs text-slate-500">Comparativa automática: Avance Físico en Campo vs. Presupuesto Ejercido</p>
+              </div>
+              <span className="text-[11px] mono px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">Sincronizado con Opus / ERP Cloud</span>
+            </div>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex flex-wrap justify-between font-semibold mb-1">
+                  <span>1. Construcción Planta Nestlé Purina · Silao, Gto. (Meta: Junio 2027)</span>
+                  <span className="text-emerald-700 mono">EN TIEMPO Y COSTO · Avance {silaoAdvance}% vs Gasto {silaoSpentPct}%</span>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-emerald-600 h-full transition-all duration-500" style={{ width: `${silaoAdvance}%` }}></div>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex flex-wrap justify-between font-semibold mb-1">
+                  <span>2. Pólizas de Mantenimiento Industrial Electromecánico (Bajío / Centro)</span>
+                  <span className="text-blue-700 mono">SLA 98.4% · {closedTickets} servicios cerrados este mes</span>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-blue-600 h-full" style={{ width: "84%" }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 mb-2.5">Autorización de Compras y Materiales desde tu Celular</h3>
+              <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                {openReqs.map(req => (
+                  <div key={req.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 flex flex-col gap-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <span className="text-[11px] font-bold mono text-slate-500">{req.id} · {req.obra}</span>
+                        <div className="text-xs font-bold text-slate-900">{req.item}</div>
+                      </div>
+                      <span className="text-xs font-extrabold mono text-slate-900">${req.monto.toLocaleString("es-MX")}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500">Solicita: {req.solicitante}</span>
+                      {req.status === "Pendiente" ? (
+                        <div className="flex gap-1.5">
+                          <button onClick={() => handleApproveReq(req.id, "Aprobada")} className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold">Aprobar</button>
+                          <button onClick={() => handleApproveReq(req.id, "Rechazada")} className="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-semibold">Detener</button>
+                        </div>
+                      ) : (
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${req.status === "Aprobada" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+                          {req.status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 mb-2.5">Bitácora de Eventos Cloud en Tiempo Real</h3>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {feedLogs.map((log, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-start gap-2.5">
+                    <span className="text-[10px] font-bold mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 shrink-0">{log.type}</span>
+                    <div className="flex-1">
+                      <div className="text-slate-800 font-medium leading-snug">{log.text}</div>
+                      <div className="text-[10px] text-slate-400 mono mt-0.5">{log.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="min-h-screen flex flex-col pb-14">
+          {/* Header Superior */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-sm mono shadow">
+                  C360
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                      Caso Real · Planta Nestlé Purina Silao (Junio 2027)
+                    </span>
+                  </div>
+                  <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight mt-0.5">
+                    CONSTRUCTORA & MANTENIMIENTO CLOUD · CONTROL EN TIEMPO REAL
+                  </h1>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowVaultModal(true)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border flex items-center gap-2 transition ${
+                    vaultFlash ? "bg-emerald-600 text-white border-emerald-600 scale-105" : "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  Bóveda Inmutable 3-2-1: ACTIVA
+                </button>
+                <button
+                  onClick={() => handleMobileAction("bitacora")}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition"
+                >
+                  + Simular Reporte Silao
+                </button>
+              </div>
+            </div>
+
+            {/* Navegación de 5 Pestañas */}
+            <div className="max-w-7xl mx-auto px-4 pb-2.5 flex gap-2 overflow-x-auto">
+              {[
+                { id: "dual", label: "1. Vista Dual En Vivo (Campo Silao → Director)" },
+                { id: "director", label: "2. Solo Dashboard Director (PC / Tablet)" },
+                { id: "campo", label: "3. Solo App Móvil Campo (Residente Silao)" },
+                { id: "carpetas", label: "4. Carpetas Nestlé, Permisos y Cómputo TI" },
+                { id: "diagnostico", label: "5. Diagnóstico TI & Pirámide (Enviar a WhatsApp)", highlight: true }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setMainTab(tab.id)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
+                    mainTab === tab.id
+                      ? tab.highlight
+                        ? "bg-emerald-700 text-white border-emerald-700 shadow"
+                        : "bg-slate-900 text-white border-slate-900 shadow"
+                      : tab.highlight
+                      ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                      : "bg-white text-slate-600 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </header>
+
+          {/* Contenido Principal */}
+          <main className="max-w-7xl w-full mx-auto px-4 py-5 flex-1">
+            {mainTab === "dual" && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                <div className="lg:col-span-5">
+                  <div className="text-xs font-bold uppercase text-slate-500 mb-2 flex justify-between">
+                    <span>• Celular en Caseta / Nave Silao</span>
+                    <span className="mono">iOS · Android · Offline OK</span>
+                  </div>
+                  {renderMobileSimulator()}
+                </div>
+                <div className="lg:col-span-7">
+                  <div className="text-xs font-bold uppercase text-slate-500 mb-2 flex justify-between">
+                    <span>• Pantalla en Vivo del Director General</span>
+                    <span className="mono">Actualización Instantánea</span>
+                  </div>
+                  {renderDirectorDashboard()}
+                </div>
+              </div>
+            )}
+
+            {mainTab === "director" && renderDirectorDashboard()}
+
+            {mainTab === "campo" && (
+              <div className="max-w-lg mx-auto">
+                {renderMobileSimulator()}
+              </div>
+            )}
+
+            {mainTab === "carpetas" && (
+              <div className="space-y-5">
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                      <h2 className="text-base font-extrabold text-slate-900">Estructura Maestra en la Nube y Blindaje por Rol (RBAC)</h2>
+                      <p className="text-xs text-slate-500">Prueba cambiar de usuario para verificar qué carpetas ve y cuáles quedan ocultas en Silao y Oficina:</p>
+                    </div>
+                    <div className="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+                      {["Director", "Residente Silao", "Técnico Mantenimiento"].map(r => (
+                        <button
+                          key={r}
+                          onClick={() => setRoleView(r)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${roleView === r ? "bg-slate-900 text-white shadow" : "text-slate-600 hover:text-slate-900"}`}
+                        >
+                          Ver como: {r}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    {[
+                      { folder: "01_DIRECCION_FINANZAS_Y_BANCOS", desc: "Estados financieros, cuentas bancarias, actas y poderes.", allowed: ["Director"] },
+                      { folder: "02_LICITACION_NESTLE_PURINA_SILAO_COSTOS", desc: "Presupuesto maestro Opus/Neodata, márgenes de utilidad, fianzas y contrato.", allowed: ["Director"] },
+                      { folder: "03_OBRA_SILAO_INGENIERIA_Y_PLANOS_VIGENTES", desc: "Planos CAD/BIM aprobados para construcción (Junio 2027). Residentes: Solo Lectura.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "04_OBRA_SILAO_EHS_SEGURIDAD_REPSE_DC3", desc: "Altas IMSS/SUA, certificados DC-3, permisos de trabajo seguro Nestlé y bitácoras.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "05_COMPRAS_ALMACEN_Y_RESGUARDOS_QR", desc: "Requisiciones autorizadas, inventario de materiales y asignación QR de herramienta.", allowed: ["Director", "Residente Silao"] },
+                      { folder: "06_SERVICIOS_MANTENIMIENTO_TICKETS_PDF", desc: "Órdenes de trabajo con fotos GPS y firma digital para facturación inmediata.", allowed: ["Director", "Residente Silao", "Técnico Mantenimiento"] }
+                    ].map((item, idx) => {
+                      const hasAccess = item.allowed.includes(roleView);
+                      return (
+                        <div key={idx} className={`p-4 rounded-xl border flex items-start justify-between gap-3 ${hasAccess ? "bg-emerald-50/40 border-emerald-200" : "bg-slate-100 border-slate-200 opacity-65"}`}>
+                          <div>
+                            <div className="font-bold mono text-slate-900">{item.folder}</div>
+                            <p className="text-slate-600 mt-1">{item.desc}</p>
+                          </div>
+                          <span className={`px-2.5 py-1 rounded-md font-bold text-[11px] shrink-0 ${hasAccess ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+                            {hasAccess ? (roleView === "Director" ? "CONTROL TOTAL" : "ACCESO PERMITIDO") : "OCULTO / BLOQUEADO"}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                  <h3 className="text-sm font-extrabold text-slate-900 mb-2">Plan de Renovación de Cómputo, Licencias y Respaldo de Equipos</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">1. Respaldo Previo de PCs Actuales</div>
+                      <p className="text-slate-600">Extracción completa de Escritorio, Documentos, correos Outlook (.PST) y bases contables/Opus antes de tocar o reemplazar cualquier computadora.</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">2. Estaciones CAD y Laptops Silao</div>
+                      <p className="text-slate-600">Actualización con unidades NVMe/RAM para equipos recuperables y suministro de workstations/laptops listas para caseta de obra en Silao.</p>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-900 mb-1">3. Licenciamiento y Bóveda 3-2-1</div>
+                      <p className="text-slate-600">Regularización Windows Pro, M365/Workspace, AutoCAD y agente silencioso que respalda cada PC diario en bóveda fría inmutable.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {mainTab === "diagnostico" && (
+              <div className="space-y-6">
+                <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-md">
+                  <span className="text-[11px] font-bold uppercase px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                    Diagnóstico Interactivo · 2 Minutos
+                  </span>
+                  <h2 className="text-lg font-extrabold mt-2">Dimensionamiento de Cómputo, Licencias, Nube y Operación Silao</h2>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Marca las opciones que reflejen tu operación actual y ordena la Pirámide de Prioridades al final para enviarme tus observaciones con un clic.
+                  </p>
+                </div>
+
+                {/* Datos opcionales */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Nombre de la Empresa (Opcional)</label>
+                    <input value={empresaNombre} onChange={e => setEmpresaNombre(e.target.value)} placeholder="Ej. Constructora e Ingeniería..." className="w-full rounded-xl border border-slate-300 px-3 py-2" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Tu Nombre / Cargo (Opcional)</label>
+                    <input value={contactoNombre} onChange={e => setContactoNombre(e.target.value)} placeholder="Director General" className="w-full rounded-xl border border-slate-300 px-3 py-2" />
+                  </div>
+                </div>
+
+                {/* Bloque 1: Empleados y Checador */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="text-sm font-extrabold text-slate-900">1. Personal, Asistencia y Checador en Obra</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    {[
+                      { label: "Personal en Oficina (Con PC)", val: empOficina, set: setEmpOficina },
+                      { label: "Residentes / Supervisores (Móvil)", val: empResidentes, set: setEmpResidentes },
+                      { label: "Técnicos / Cuadrillas en Campo", val: empCampo, set: setEmpCampo }
+                    ].map((item, i) => (
+                      <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <span className="font-semibold text-slate-700">{item.label}</span>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => item.set(Math.max(0, item.val - 1))} className="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold">-</button>
+                          <span className="w-8 text-center font-extrabold mono text-sm">{item.val}</span>
+                          <button onClick={() => item.set(item.val + 1)} className="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold">+</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-700 mb-2">¿Cómo checan entradas/salidas hoy?</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Reloj checador físico en oficina/bodega",
+                        "Listas en papel / Excel por residente",
+                        "Mensajes por grupos de WhatsApp",
+                        "Requerimos Check-in GPS + Foto en caseta Silao"
+                      ].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => toggleMulti(checadorActual, setChecadorActual, opt)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                            checadorActual.includes(opt) ? "bg-blue-600 text-white border-blue-600" : "bg-slate-50 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloque 2: Equipos de Cómputo, Licencias y Respaldo */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="text-sm font-extrabold text-slate-900">2. Actualización de Equipos de Cómputo, Licencias y Respaldo de PCs</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    {[
+                      { label: "PCs Administrativas / Oficina", val: pcOficina, set: setPcOficina },
+                      { label: "Estaciones Ingeniería (AutoCAD/BIM)", val: pcCad, set: setPcCad },
+                      { label: "Laptops / Tablets para Silao", val: pcPortatiles, set: setPcPortatiles }
+                    ].map((item, i) => (
+                      <div key={i} className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <span className="font-semibold text-slate-700">{item.label}</span>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => item.set(Math.max(0, item.val - 1))} className="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold">-</button>
+                          <span className="w-8 text-center font-extrabold mono text-sm">{item.val}</span>
+                          <button onClick={() => item.set(item.val + 1)} className="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold">+</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-bold text-slate-700 mb-2">¿Qué requieren hacer con sus computadoras actuales?</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Actualizar equipos lentos (SSD/RAM)",
+                        "Adquirir equipos nuevos para proyecto Silao",
+                        "Reemplazar PCs obsoletas en oficina",
+                        "Configurar red / servidor en la nube"
+                      ].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => toggleMulti(accionComputo, setAccionComputo, opt)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                            accionComputo.includes(opt) ? "bg-slate-900 text-white border-slate-900" : "bg-slate-50 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-bold text-slate-700 mb-2">Licencias de Software a regularizar o instalar:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Windows Pro",
+                        "Microsoft 365 / Office Oficial",
+                        "Google Workspace Empresarial",
+                        "AutoCAD / Revit / Civil 3D",
+                        "Opus / Neodata / CONTPAQi en Nube",
+                        "Antivirus Empresarial Gestionado"
+                      ].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => toggleMulti(licenciasReq, setLicenciasReq, opt)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                            licenciasReq.includes(opt) ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs font-bold text-slate-700 mb-2">¿Qué información urge respaldar de esas computadoras?</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Carpetas Mis Documentos / Escritorio de cada PC",
+                        "Correos históricos (.PST Outlook)",
+                        "Bases de datos Opus / Neodata / Contabilidad",
+                        "Discos duros externos sueltos",
+                        "Respaldo diario automático sin intervención"
+                      ].map(opt => (
+                        <button
+                          key={opt}
+                          onClick={() => toggleMulti(respaldosLocales, setRespaldosLocales, opt)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                            respaldosLocales.includes(opt) ? "bg-emerald-700 text-white border-emerald-700" : "bg-slate-50 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloque 3: Compras, Inventario y Conectividad */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                  <h3 className="text-sm font-extrabold text-slate-900">3. Compras, Materiales, Almacén y Campo</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "Compras de urgencia en obra sin validar presupuesto",
+                      "Control de herramienta y equipo con QR entre bodega y Silao",
+                      "Entradas/salidas exactas de material consumible",
+                      "Cruzar facturas de proveedor vs. material recibido en obra"
+                    ].map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => toggleMulti(doloresCompras, setDoloresCompras, opt)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                          doloresCompras.includes(opt) ? "bg-amber-600 text-white border-amber-600" : "bg-slate-50 text-slate-700 border-slate-200"
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Volumen total estimado de archivos:</label>
+                      <select value={volumenDatos} onChange={e => setVolumenDatos(e.target.value)} className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-slate-50">
+                        <option>Menos de 500 GB</option>
+                        <option>Entre 500 GB y 2 TB</option>
+                        <option>Más de 2 TB (Histórico + Planos pesados)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Trabajo sin señal celular en obra:</label>
+                      <select value={modoOfflineReq} onChange={e => setModoOfflineReq(e.target.value)} className="w-full rounded-xl border border-slate-300 px-3 py-2 bg-slate-50">
+                        <option>Sí, indispensable modo sin señal en naves industriales / terracerías</option>
+                        <option>Casi siempre cuentan con señal 4G/Wi-Fi</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloque 4: Pirámide Interactiva de 6 Niveles */}
+                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                  <div>
+                    <h3 className="text-sm font-extrabold text-slate-900">4. Tu Pirámide de Prioridades (Usa ↑ ↓ para poner en #1 lo más urgente)</h3>
+                    <p className="text-xs text-slate-500">El Nivel #1 será nuestra Fase de Arranque Inmediato antes del despliegue fuerte en Silao.</p>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {piramide.map((item, idx) => (
+                      <div key={item.id} className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 ${idx === 0 ? "bg-emerald-50 border-emerald-300" : idx === 1 ? "bg-blue-50/60 border-blue-200" : "bg-slate-50 border-slate-200"}`}>
+                        <div className="flex items-center gap-3">
+                          <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-extrabold mono text-xs shrink-0 ${idx === 0 ? "bg-emerald-700 text-white" : "bg-slate-900 text-white"}`}>
+                            #{idx + 1}
+                          </span>
+                          <div>
+                            <div className="text-xs sm:text-sm font-bold text-slate-900">{item.titulo}</div>
+                            <div className="text-[11px] text-slate-600">{item.desc}</div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-1 shrink-0">
+                          <button onClick={() => movePyramidItem(idx, -1)} disabled={idx === 0} className="px-2.5 py-1 rounded bg-white border border-slate-300 text-xs font-bold disabled:opacity-30">↑</button>
+                          <button onClick={() => movePyramidItem(idx, 1)} disabled={idx === piramide.length - 1} className="px-2.5 py-1 rounded bg-white border border-slate-300 text-xs font-bold disabled:opacity-30">↓</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Observaciones o comentarios sobre el prototipo:</label>
+                    <textarea
+                      rows="3"
+                      value={comentariosExtra}
+                      onChange={e => setComentariosExtra(e.target.value)}
+                      placeholder="Ej. Qué indicadores agregar al tablero del Director o requerimientos especiales para Silao..."
+                      className="w-full rounded-xl border border-slate-300 p-3 text-xs"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button
+                      onClick={sendToWhatsApp}
+                      className="flex-1 py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg transition text-center"
+                    >
+                      Enviar Diagnóstico y Prioridades por WhatsApp →
+                    </button>
+                    <button
+                      onClick={copySummary}
+                      className="py-3.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition"
+                    >
+                      Copiar Resumen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Modal Bóveda 3-2-1 */}
+          {showVaultModal && (
+            <div className="fixed inset-0 bg-slate-950/60 z-50 flex items-center justify-center p-4" onClick={() => setShowVaultModal(false)}>
+              <div className="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl space-y-3" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 mono">Regla de Respaldo 3-2-1 Activa</span>
+                  <button onClick={() => setShowVaultModal(false)} className="text-slate-400 hover:text-slate-700 font-bold text-sm">✕</button>
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900">Cómo se blinda toda la información de la constructora</h3>
+                <ul className="space-y-2 text-xs text-slate-700">
+                  <li className="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><strong>Copia 1 (Trabajo Diario en Vivo):</strong> Nube colaborativa estructurada por obra (Silao, Mantenimientos, Administración) más agente en PCs de oficina/AutoCAD.</li>
+                  <li className="p-2.5 rounded-xl bg-slate-50 border border-slate-200"><strong>Copia 2 (Espejo Independiente):</strong> Respaldo automatizado nocturno de bases contables, Opus y correos históricos.</li>
+                  <li className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200"><strong>Copia 3 (Bóveda Fría Inmutable — Object Lock 30 días):</strong> Aunque un equipo sufra robo, falla de disco, virus ransomware o borrado humano intencional, la copia encriptada no puede alterarse ni eliminarse y se restaura en minutos.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Barra inferior de atajos */}
+          <footer className="fixed bottom-0 inset-x-0 bg-slate-900 text-slate-300 text-[11px] py-2 px-4 z-20 hidden md:block border-t border-slate-800">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-3 mono">
+                <span className="text-slate-400">Atajos:</span>
+                <span>[1] Dual</span>
+                <span>[2] Director</span>
+                <span>[3] Móvil Silao</span>
+                <span>[4] Carpetas/TI</span>
+                <span>[5] Diagnóstico</span>
+                <span>[R] Simular Avance</span>
+                <span>[B] Bóveda 3-2-1</span>
+              </div>
+              <span>Todo cambio en la App Móvil impacta el Tablero del Director al instante</span>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
